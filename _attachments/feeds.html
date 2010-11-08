@@ -40,8 +40,42 @@
     Listing all subscribed feeds. 
     -->
     <script>
+    
+    //
+    // Susbcribes to the feed at Superfeedr, using pubsubjubhub.
+    function subscribeToFeed(feed) {
+        var superfeedr_login    = "couchapp";
+        var superfeedr_password = "couchapp1";
+        var pubsubjubhub        = "http://pubsubjubhub.appspot.com/"
+        var callback            = "http://superfeedr.couchone.com/push/_design/push/_rewrite/feeds/" + feed.id + "/entries";
+        var url                 = pubsubjubhub + "?"
+            + "hub.url=http://superfeedr.com/hubbub"
+            + "&superfeedr.format=json" 
+            + "&hub.topic=" + feed.url 
+            + "&hub.callback=" + callback 
+            + "&superfeedr.login=" + superfeedr_login 
+            + "&superfeedr.password=" + superfeedr_password;
+
+        $.ajax({
+            url: url,
+            dataType: "jsonp",
+            success: function(data) {
+                if(data.code == "200") {
+                    alert("Successfully subscribed");
+                }
+                else {
+                    alert(data.body);
+                }
+            },
+            error: function(request, textStatus, errorThrown) {
+                alert("There was an error when trying to subscribe to this feed. " + textStatus);
+            }
+        });
+    }
+    
     $.couch.app(function(app){
-        
+        // On startup, we need to load all the feeds stored in the couch.
+        // Show them, as well as their stories.
         docs = app.db.allDocs({
             success: function(data) {
                 for(row in data.rows) {
@@ -60,40 +94,19 @@
         // First, we need to create the feed, and get the id for this feed to build the callback.
         // Once the feed is created, we can then perform the PubSubHubbub subscription.
         // Of course the UI needs some work :) and we may also want to mark the feed when it is subscribed.
-        
         $('#subscribe').submit(function() {
-
-            // Settings [we may want to store these in couch?]
-            var superfeedr_login    = "couchapp";
-            var superfeedr_password = "couchapp1";
 
             var feed_url = $('#url').val();
 
             app.db.saveDoc({
-                url: feed_url, 
+                url: feed_url,
+                type: "feed", 
                 created_at: new Date().getTime(), 
                 updated_at: new Date().getTime(), 
                 entries: [] }, {
                 success: function(feed) {
-                    alert(JSON.stringify(feed));
                     alert("Feed created! Subscribing now.")
-                    var pubsubjubhub = "http://pubsubjubhub.appspot.com/"
-                    var callback = "http://superfeedr.couchone.com/push/_design/push/_rewrite/feeds/" + feed.id + "/entries";
-                    var url = pubsubjubhub + "?"
-                    + "hub.url=http://superfeedr.com/hubbub"
-                    + "&superfeedr.format=json" 
-                    + "&hub.topic=" + feed_url 
-                    + "&hub.callback=" + callback 
-                    + "&superfeedr.login=" + superfeedr_login 
-                    + "&superfeedr.password=" + superfeedr_password;
-
-                    $.ajax({
-                        url: url,
-                        dataType: "jsonp",
-                        success: function(data) {
-                            alert(JSON.stringify(data));
-                        }
-                    });
+                    subscribeToFeed(feed)
                 },
                 error: function() {
                     alert("There was an error when adding the feed, please retry");
