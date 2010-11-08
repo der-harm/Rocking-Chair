@@ -7,23 +7,57 @@
 <head>
     <link rel="stylesheet" href="styles/main.css" type="text/css" />
     <script type="text/javascript" src="scripts/jquery-1.4.3.min.js"></script>
-    <script type="text/javascript">
-
-    </script>
+    <script type="text/javascript" src="scripts/jquery.couch.js"></script>
+    <script type="text/javascript" src="scripts/jquery.couch.app.js"></script>
     <title>Subscribed feeds</title>
 </head>
 <body>
-    <h1>Subscribed feeds</h1>
-    <h2>Subscribe to a new feed</h2>
-    <form id="subscribe">
-        <p>
-            <label>URL:</label><br />
-            <input type="text" name="url" id="url" size="180" value="http://superfeedr.tumblr.com/rss" />
-        </p>
-        <p>
-            <input type="submit">
-        </p>
-    </form>
+    <div id="container">
+      <div id="feeds">
+        <table id="list">
+            <tbody>
+            </tbody>
+        </table>
+        <h2>Subscribe to a new feed</h2>
+        <form id="subscribe">
+            <p>
+                <label>URL:</label><br />
+                <input type="text" name="url" id="url" value="http://superfeedr.com/track/music" />
+            </p>
+            <p>
+                <input type="submit">
+            </p>
+        </form>
+      </div>
+      <div id="content">
+        
+      </div>
+    </div>
+    
+    
+    <!--
+    Listing all subscribed feeds. 
+    -->
+    <script>
+    $.couch.app(function(app){
+        docs = app.db.allDocs({
+            success: function(data) {
+                for(row in data.rows) {
+                    if(data.rows[row].id != "_design/push") {
+                        app.db.openDoc(data.rows[row].id, {
+                            success: function(feed) {
+                                $('#list > tbody:last').append('<tr><td><img src="http://getfavicon.appspot.com/' + feed.url + '" /></td><td>' +  feed.title + '</td></tr>');
+                            }
+                        })
+                    }
+                }
+            }
+        });
+    });
+    
+    
+    </script>
+    
     <!-- 
         Since couchapps cannot actually HTTP calls (design choice), we need to perform the subscription from the web browser.
         First, we need to create the feed, and get the id for this feed to build the callback.
@@ -32,21 +66,35 @@
     -->
     <script>
     $('#subscribe').submit(function() {
+        
+        // Settings [we may want to store these in couch?]
+        var superfeedr_login    = "couchapp";
+        var superfeedr_password = "couchapp1";
+        
+        
         var feed_url = $('#url').val();
         
         jQuery.post("_update/feeds", { url: feed_url}, function(feed_id) {
             alert("Feed created! Subscribing now.")
-            // Then, we need to extract the hub url, if applicable. 
+            
+            var pubsubjubhub = "http://pubsubjubhub.appspot.com/"
             var callback = "http://superfeedr.couchone.com/push/_design/push/_rewrite/feeds/" + feed_id + "/entries";
-            var url = "http://pubsubjubhub.appspot.com/?hub.topic=" + feed_url + "&hub.callback=" + callback;
-            jQuery.getJSON(url+"&callback=?", function(data) {
-                if(data.code == 204) {
-                    alert("Successfully subscribed to feed");
-                }
-                else {
-                    alert("Couldn't subscribe to hub " + data.code + " - " + data.body);
-                }
+            var url = pubsubjubhub + "?"
+            + "hub.url=http://superfeedr.com/hubbub"
+            + "&superfeedr.format=json" 
+            + "&hub.topic=" + feed_url 
+            + "&hub.callback=" + callback 
+            + "&superfeedr.login=" + superfeedr_login 
+            + "&superfeedr.password=" + superfeedr_password;
+
+            $.ajax({
+              url: url,
+              dataType: "jsonp",
+              success: function(data) {
+                alert(JSON.stringify(data));
+              },
             });
+
         });
         return false;
     });

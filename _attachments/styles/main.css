@@ -1,1 +1,61 @@
-/* CSS */
+/* http://www.colourlovers.com/palette/1332591/Heiderich */
+body {
+  font: 12px/18px Helvetica, Arial, sans-serif;
+  color: #123754;
+  background-color: #EAEED5;
+}
+
+a {
+  color: #419693;
+}
+
+a:hover {
+  text-decoration: none;
+}
+
+h1,h2 {
+  font-weight: normal;
+}
+
+h1 {
+  font-size: 24px;
+  line-height: 24px;
+}
+
+h2 {
+  margin-top: 30px;
+  font-size: 18px;
+  line-height: 18px;
+}
+
+#container {
+  padding: 50px 30px 50px 100px;
+}
+
+#content {
+  margin-left: 20% ;
+  background-color:green;
+}
+
+#feeds {
+  padding: 20px;
+  background-color: #EAEED5;
+  float: left ;
+  width: 300px ;
+}
+
+form#subscribe input {
+  width: 280px;
+}
+
+#list {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+#list tr {
+  width: 100%;
+  padding: 5px;
+  border-top: inset 1px #DBDDC1;
+  border-bottom: inset 1px #DBDDC1;
+}

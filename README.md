@@ -20,25 +20,6 @@ Ok, so lets say you want to embed a feed of upcoming calendar events on your _sw
 
 Here's an example of this whole thingy working: I log all Portland, OR 911 calls and make them available as ActivityStreams here: <code>http://pdxapi.com/pdx911/feed?descending=true&limit=5</code>
 
-# ActivityStreams
-
-By default this will convert any incoming XML RSS/ATOM feed data into JSON [ActivityStreams](http://activitystrea.ms) format. ActivityStreams are the new hotness, pure XML ATOM/RSS is old and busted. Here's an example of an ActivityStreams formatted feed item:
-
-    {
-       "postedTime":"2010-10-14T00:58:32Z",
-       "object": {
-           "permalinkUrl": "http://rss.cnn.com/~r/rss/cnn_latest/~3/s52R1lImWu0/index.html",
-           "objectType": "article",
-           "summary": "O'Donnell, Coons stage feisty debate in Delaware"
-       },
-       "verb": "post",
-       "actor": {
-           "permalinkUrl": "http://rss.cnn.com/~r/rss/cnn_latest/~3/s52R1lImWu0/index.html",
-           "objectType": "service",
-           "displayName": "CNN.com Recently Published/Updated"
-       }
-    }
-
 # How-to
 
 You can use any CouchDB hosted pubicly (so that Superfeedr can post updates to it), but I'll assume you're working with a free Couch hosted by [CouchOne](http://couchone.com/get).

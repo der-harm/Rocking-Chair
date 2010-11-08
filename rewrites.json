@@ -11,7 +11,7 @@
   },
   {
     "from"   : "feeds/:_id",
-    "to"     : "_show/feed",
+    "to"     : "_show/feed/:_id",
     "method" : "GET"
   },
   {
