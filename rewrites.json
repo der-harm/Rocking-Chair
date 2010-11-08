@@ -13,10 +13,5 @@
     "from"   : "feeds/:_id",
     "to"     : "_show/feed/:_id",
     "method" : "GET"
-  },
-  {
-    "from"   : "feeds",
-    "to"     : "_update/feeds",
-    "method" : "POST"
   }
 ]

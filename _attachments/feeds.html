@@ -16,13 +16,14 @@
       <div id="feeds">
         <table id="list">
             <tbody>
+                <!-- this is where the feeds will be shown -->
             </tbody>
         </table>
         <h2>Subscribe to a new feed</h2>
         <form id="subscribe">
             <p>
                 <label>URL:</label><br />
-                <input type="text" name="url" id="url" value="http://superfeedr.com/track/music" />
+                <input type="text" name="url" id="url" value="" />
             </p>
             <p>
                 <input type="submit">
@@ -30,7 +31,7 @@
         </form>
       </div>
       <div id="content">
-        
+          <!-- this is where the entries will be shown -->
       </div>
     </div>
     
@@ -40,6 +41,7 @@
     -->
     <script>
     $.couch.app(function(app){
+        
         docs = app.db.allDocs({
             success: function(data) {
                 for(row in data.rows) {
@@ -53,51 +55,54 @@
                 }
             }
         });
-    });
-    
-    
-    </script>
-    
-    <!-- 
-        Since couchapps cannot actually HTTP calls (design choice), we need to perform the subscription from the web browser.
-        First, we need to create the feed, and get the id for this feed to build the callback.
-        Once the feed is created, we can then perform the PubSubHubbub subscription.
-        Of course the UI needs some work :) and we may also want to mark the feed when it is subscribed.
-    -->
-    <script>
-    $('#subscribe').submit(function() {
         
-        // Settings [we may want to store these in couch?]
-        var superfeedr_login    = "couchapp";
-        var superfeedr_password = "couchapp1";
+        // Since couchapps cannot actually HTTP calls (design choice), we need to perform the subscription from the web browser.
+        // First, we need to create the feed, and get the id for this feed to build the callback.
+        // Once the feed is created, we can then perform the PubSubHubbub subscription.
+        // Of course the UI needs some work :) and we may also want to mark the feed when it is subscribed.
         
-        
-        var feed_url = $('#url').val();
-        
-        jQuery.post("_update/feeds", { url: feed_url}, function(feed_id) {
-            alert("Feed created! Subscribing now.")
-            
-            var pubsubjubhub = "http://pubsubjubhub.appspot.com/"
-            var callback = "http://superfeedr.couchone.com/push/_design/push/_rewrite/feeds/" + feed_id + "/entries";
-            var url = pubsubjubhub + "?"
-            + "hub.url=http://superfeedr.com/hubbub"
-            + "&superfeedr.format=json" 
-            + "&hub.topic=" + feed_url 
-            + "&hub.callback=" + callback 
-            + "&superfeedr.login=" + superfeedr_login 
-            + "&superfeedr.password=" + superfeedr_password;
+        $('#subscribe').submit(function() {
 
-            $.ajax({
-              url: url,
-              dataType: "jsonp",
-              success: function(data) {
-                alert(JSON.stringify(data));
-              },
+            // Settings [we may want to store these in couch?]
+            var superfeedr_login    = "couchapp";
+            var superfeedr_password = "couchapp1";
+
+            var feed_url = $('#url').val();
+
+            app.db.saveDoc({
+                url: feed_url, 
+                created_at: new Date().getTime(), 
+                updated_at: new Date().getTime(), 
+                entries: [] }, {
+                success: function(feed) {
+                    alert(JSON.stringify(feed));
+                    alert("Feed created! Subscribing now.")
+                    var pubsubjubhub = "http://pubsubjubhub.appspot.com/"
+                    var callback = "http://superfeedr.couchone.com/push/_design/push/_rewrite/feeds/" + feed.id + "/entries";
+                    var url = pubsubjubhub + "?"
+                    + "hub.url=http://superfeedr.com/hubbub"
+                    + "&superfeedr.format=json" 
+                    + "&hub.topic=" + feed_url 
+                    + "&hub.callback=" + callback 
+                    + "&superfeedr.login=" + superfeedr_login 
+                    + "&superfeedr.password=" + superfeedr_password;
+
+                    $.ajax({
+                        url: url,
+                        dataType: "jsonp",
+                        success: function(data) {
+                            alert(JSON.stringify(data));
+                        }
+                    });
+                },
+                error: function() {
+                    alert("There was an error when adding the feed, please retry");
+                } 
             });
-
+            return false;
         });
-        return false;
     });
+    
     </script>
 </body>
 </html>

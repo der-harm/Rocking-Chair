@@ -11,7 +11,7 @@ function(doc, req){
   doc['status']     = notif.status;
   doc['subtitle']   = notif.subtitle;
   doc['title']      = notif.title;
-  doc['updated']    = notif.updated;
+  doc['updated_at'] = notif.updated;
   
   for(var i=0;i<notif.items.length;i=i+1)
   {
