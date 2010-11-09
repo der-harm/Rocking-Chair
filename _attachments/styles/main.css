@@ -29,6 +29,11 @@ h2 {
   line-height: 18px;
 }
 
+td {
+  white-space: nowrap;
+  padding: 5px;
+}
+
 #container {
   margin: 20px 50px;
   padding: 10px;
@@ -44,7 +49,7 @@ h2 {
   min-height: 200px;
 }
 
-#feeds {
+#side {
   background-color: white;
   border-radius: 7px 7px;
   border: 1px solid #E6E6E6;
@@ -58,12 +63,45 @@ form#subscribe input {
   width: 280px;
 }
 
-#list {
+#feeds {
   border-collapse: collapse;
   width: 100%;
 }
 
-#list tr {
+#feeds tr {
   width: 100%;
   padding: 5px;
+}
+
+#entries tr:hover {
+  background-color: #AECEA5;
+}
+
+#entries tr:hover a {
+  color: #123754;
+}
+
+#feeds tr td.title {
+  width:100px;
+}
+
+#feeds small {
+  color: #CCC;
+}
+
+td img {
+  width: 16px;
+  max-width: 16px;
+}
+
+#entries .title {
+  color :#999;
+}
+
+#footer {
+  padding-top: 50px;
+  text-align:center;
+  padding-bottom: 20px;
+  width: 100%;
+  clear:both;
 }

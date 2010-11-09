@@ -9,12 +9,13 @@
     <script type="text/javascript" src="scripts/jquery-1.4.3.min.js"></script>
     <script type="text/javascript" src="scripts/jquery.couch.js"></script>
     <script type="text/javascript" src="scripts/jquery.couch.app.js"></script>
+    <script type="text/javascript" src="scripts/jquery.text-overflow.js"></script>
     <title>Subscribed feeds</title>
 </head>
 <body>
     <div id="container">
-      <div id="feeds">
-        <table id="list">
+      <div id="side">
+        <table id="feeds">
             <tbody>
                 <!-- this is where the feeds will be shown -->
             </tbody>
@@ -32,38 +33,75 @@
       </div>
       <div id="content">
           <!-- this is where the entries will be shown -->
+          <table id="entries">
+              <tbody>
+                  <!-- this is where the feeds will be shown -->
+              </tbody>
+          </table>
       </div>
     </div>
-    
+    <div id="footer">
+        This small feed reader app is brought to you by <a href="http://superfeedr.com">Superfeedr</a>, with a lot of <a href="http://couchdb.apache.org/">CouchDD</a> magic. It's a branch of the excellent <a href="https://github.com/maxogden/couchpubtato">Couchpubtato</a> by <a href="https://github.com/maxogden/couchpubtato">maxogden</a>, with contributions of <a href="https://github.com/tjgillies">tjgillies</a>.
+    </div>
     
     <!--
     Listing all subscribed feeds. 
     -->
     <script>
     
+    //
+    // Truncates the strings
+    function truncate(string, size) {
+        if(string.length > size - 3) {
+            return string.substring(0, size - 3) + "...";
+        }
+        else {
+            return string
+        }
+    }
+    
     // 
     // Shows a feed document
     function showFeed(feed) {
-        var row = '<tr><td><img src="http://getfavicon.appspot.com/';
-        row += feed.url + '" /></td><td>';
-        if(feed.title) {
-            row += feed.title + '</td>';
-        } else {
-           row += feed.url + '</td>';
-        }
-        if(feed.susbcribed == true) {
-            
-        }
-        else {
-            row += '<td class="resubscribe"><a href="#" id="' + feed._id  +'">s</a></td>';
-        }
-        row += "</tr>";
-        $('#list > tbody:last').append(row);
+        $('#feeds').find('tbody').append($('<tr>')
+            .append($('<td>')
+                .append($('<img>')
+                    .attr('src', 'http://getfavicon.appspot.com/' + feed.link)
+                )
+            )
+            .append($('<td>')
+                .attr('class', 'title')
+                .text(feed.title ? truncate(feed.title, 56) : truncate(feed.url, 56) )
+            )
+            .append($('<td>')
+                .append($('<small>')
+                    .text(feed.entries ? feed.entries.length : 0)
+                )
+            )
+        )
         
-        $('#'+feed._id).click(function() {
-            subscribeToFeed(feed);
-            return false;
-        })
+        // And now show all the entries for this feed!
+        for(entry_index in feed.entries) {
+            entry = feed.entries[entry_index];
+            $('#entries').find('tbody').append($('<tr>')
+                .append($('<td>')
+                    .append($('<img>')
+                        .attr('src', 'http://getfavicon.appspot.com/' + entry.link)
+                    )
+                )
+                .append($('<td>')
+                    .attr('class', 'title')
+                    .text(feed.title ? truncate(feed.title, 24) : truncate(feed.url, 24) )
+                )
+                .append($('<td>')
+                    .append($('<a>')
+                        .attr('href', entry.link ? entry.link : "")
+                        .attr('rel', "_blank")
+                        .text(truncate(entry.title, 80))
+                    )
+                )
+            )
+        }
     }
     
     //
@@ -80,8 +118,6 @@
             + "&hub.callback=" + callback 
             + "&superfeedr.login=" + superfeedr_login 
             + "&superfeedr.password=" + superfeedr_password;
-
-        alert(url);
 
         $.ajax({
             url: url,
@@ -133,6 +169,7 @@
                 entries: [] }, {
                 success: function(feed) {
                     feed.url = feed_url;
+                    feed._id = feed.id; // For some reason the couch call returns id when creating and _id when retrieving... meh
                     showFeed(feed);
                     subscribeToFeed(feed);
                     alert("Feed created! Subscribing now.");

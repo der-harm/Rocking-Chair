@@ -12,10 +12,26 @@ function(doc, req){
   doc['subtitle']   = notif.subtitle;
   doc['title']      = notif.title;
   doc['updated_at'] = notif.updated;
+
+  for(index in notif.links) {
+    link = notif.links[index];
+    if(link.rel == "alternate" && link.type == "text/html") {
+      doc['link'] = link;
+    }
+  }
   
   for(var i=0;i<notif.items.length;i=i+1)
   {
-    doc['entries'].push(notif.items[i]);
+    item = notif.items[i];
+
+    for(index in item.links) {
+      link = item.links[index];
+      if(link.rel == "alternate" && link.type == "text/html") {
+        item['link'] = link;
+      }
+    }
+    
+    doc['entries'].push(item);
     if(doc['entries'].length > 50) {
       doc['entries'].shift();
     }
