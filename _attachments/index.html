@@ -72,8 +72,9 @@
     
     // 
     // Shows a feed document
-    function showFeed(feed) {
+    function showFeed(feed, app) {
         $('#feeds').find('tbody').append($('<tr>')
+            .attr("id", feed._id)
             .append($('<td>')
                 .append($('<img>')
                     .attr('src', 'http://getfavicon.appspot.com/' + feed.link)
@@ -88,6 +89,19 @@
                     .text(feed.entries ? feed.entries.length : 0)
                 )
             )
+            .append($('<td>')
+                .append($('<img>')
+                    .attr('src', 'icons/delete.png')
+                    .click(function() { 
+                        app.db.removeDoc(feed, {
+                            success: function() {
+                                alert("deleted!");
+                                $('#' + feed._id).remove();
+                            }
+                        });
+                    })
+                )
+            )
         )
         
         // And now show all the entries for this feed!
@@ -96,6 +110,7 @@
             postedTime = new Date().fromISO(entry.postedTime)
             $('#entries').find('tbody').append($('<tr>')
                 .append($('<td>')
+                    .attr("id", feed.id + "-" + entry.id)
                     .attr("class", "posted_time")
                     .text(postedTime.getTime())
                 )
@@ -164,7 +179,7 @@
                     if(data.rows[row].id != "_design/push") {
                         app.db.openDoc(data.rows[row].id, {
                             success: function(feed) {
-                                showFeed(feed);
+                                showFeed(feed, app);
                             }
                         })
                     }
@@ -189,7 +204,7 @@
                 success: function(feed) {
                     feed.url = feed_url;
                     feed._id = feed.id; // For some reason the couch call returns id when creating and _id when retrieving... meh
-                    showFeed(feed);
+                    showFeed(feed, app);
                     subscribeToFeed(feed);
                     alert("Feed created! Subscribing now.");
                 },
