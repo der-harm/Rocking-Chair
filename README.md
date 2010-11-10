@@ -40,7 +40,7 @@ Setup a couchdb locally, open your browser at <code>http://localhost:5984/_utils
 
 The MIT License
 
-Copyright (c) 2010 Max Ogden and Tyler Gillies
+Copyright (c) 2010 Julien Genestoux, Max Ogden and Tyler Gillies
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
