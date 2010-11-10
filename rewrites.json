@@ -8,10 +8,5 @@
     "from"   : "feeds/:_id/entries",
     "to"     : "_update/entries/:_id",
     "method" : "POST"
-  },
-  {
-    "from"   : "feeds/:_id",
-    "to"     : "_show/feed/:_id",
-    "method" : "GET"
   }
 ]

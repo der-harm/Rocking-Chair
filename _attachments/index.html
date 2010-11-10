@@ -10,6 +10,8 @@
     <script type="text/javascript" src="scripts/jquery.couch.js"></script>
     <script type="text/javascript" src="scripts/jquery.couch.app.js"></script>
     <script type="text/javascript" src="scripts/jquery.text-overflow.js"></script>
+    <script type="text/javascript" src="scripts/jquery.tablesorter.js"></script>
+    <script type="text/javascript" src="scripts/date8601.js"></script>
     <title>Subscribed feeds</title>
 </head>
 <body>
@@ -34,6 +36,14 @@
       <div id="content">
           <!-- this is where the entries will be shown -->
           <table id="entries">
+              <thead> 
+              <tr> 
+                  <th>Published</th> 
+                  <th>Icon</th> 
+                  <th>Source</th> 
+                  <th>Title</th> 
+              </tr> 
+              </thead>
               <tbody>
                   <!-- this is where the feeds will be shown -->
               </tbody>
@@ -83,25 +93,34 @@
         // And now show all the entries for this feed!
         for(entry_index in feed.entries) {
             entry = feed.entries[entry_index];
+            postedTime = new Date().fromISO(entry.postedTime)
             $('#entries').find('tbody').append($('<tr>')
                 .append($('<td>')
+                    .attr("class", "posted_time")
+                    .text(postedTime.getTime())
+                )
+                .append($('<td>')
+                    .attr("class", "favicon")
                     .append($('<img>')
-                        .attr('src', 'http://getfavicon.appspot.com/' + entry.link)
+                        .attr('src', 'http://getfavicon.appspot.com/' + entry.link.href)
                     )
                 )
                 .append($('<td>')
+                    .attr("class", "source")
                     .attr('class', 'title')
-                    .text(feed.title ? truncate(feed.title, 24) : truncate(feed.url, 24) )
+                    .text(feed.title ? truncate(feed.title, 36) : truncate(feed.url, 36) )
                 )
                 .append($('<td>')
+                    .attr("class", "title")
                     .append($('<a>')
-                        .attr('href', entry.link ? entry.link : "")
-                        .attr('rel', "_blank")
+                        .attr('href', entry.link ? entry.link.href : "")
+                        .attr('target', "_blank")
                         .text(truncate(entry.title, 80))
                     )
                 )
             )
         }
+        $("#entries").tablesorter({sortList: [[0,1]]}); 
     }
     
     //
@@ -110,7 +129,7 @@
         var superfeedr_login    = "couchapp";
         var superfeedr_password = "couchapp1";
         var pubsubjubhub        = "http://pubsubjubhub.appspot.com/"
-        var callback            = "http://superfeedr.couchone.com/push/_design/push/_rewrite/feeds/" + feed._id + "/entries";
+        var callback            = "http://" + location.host +"/push/_design/push/_rewrite/feeds/" + feed._id + "/entries";
         var url                 = pubsubjubhub + "?"
             + "hub.url=http://superfeedr.com/hubbub"
             + "&superfeedr.format=json" 
@@ -123,11 +142,11 @@
             url: url,
             dataType: "jsonp",
             success: function(data) {
-                if(data.code == "200") {
+                if(data.code == "204") {
                     alert("Successfully subscribed");
                 }
                 else {
-                    alert(data.body);
+                    alert(data.code + " - " + data.body);
                 }
             },
             error: function(request, textStatus, errorThrown) {

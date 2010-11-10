@@ -1,5 +1,4 @@
 {
-  "name": "CouchApp PubSubHubbub Subscriptions",
-  "description": "A Simple CouchApp PubSub Subscriber",
-  "index":"feeds.html"
+  "name": "Rocking Chair",
+  "description": "A small feed reader which uses Superfeedr"
 }

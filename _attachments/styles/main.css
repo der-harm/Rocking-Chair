@@ -73,6 +73,22 @@ form#subscribe input {
   padding: 5px;
 }
 
+#entries th {
+  display:none;
+}
+
+#entries td.posted_time {
+  display:none;
+}
+
+#entries td.title {
+  width:100%;
+}
+
+#entries tr {
+  width:100%;
+}
+
 #entries tr:hover {
   background-color: #AECEA5;
 }
