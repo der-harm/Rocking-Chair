@@ -37,6 +37,8 @@ Setup a couchdb locally, open your browser at <code>http://localhost:5984/_utils
 - Add Read/unread management
 - Add Tag management
 - Add Favorites
+- check that subscriptions are actually wanted. The current version always acknowledges the verification request.
+- add a little help to allow people to subscribe to track feeds, like http://superfeedr.com/track/couchdb [any mention of couchdb]
 - ...
 
 # License
