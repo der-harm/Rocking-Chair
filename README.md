@@ -34,6 +34,9 @@ Setup a couchdb locally, open your browser at <code>http://localhost:5984/_utils
     - https for hub subscriptions, and HMAC signatures verifications
 - do a mobile phone UI
 - try replication on an Android
+- Add Read/unread management
+- Add Tag management
+- Add Favorites
 - ...
 
 # License
